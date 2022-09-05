@@ -1,93 +1,13 @@
 import { Billboard, useGLTF, useTexture } from "@react-three/drei"
-import { useFrame } from "@react-three/fiber"
-import {
-  useState,
-  useEffect,
-  useRef,
-  useLayoutEffect,
-  useCallback,
-} from "react"
-import { BufferAttribute, DoubleSide, MathUtils, Vector3 } from "three"
+import { useState, useEffect, useRef } from "react"
+import { BufferAttribute, Vector3 } from "three"
 import VertexTransform from "../Materials/Shaders/__VERTEXTRANSFORM__/VertexTransform/VertexTransform"
 import {
-  // axisData,
   centroidData,
   faceIDData,
-  singleSkyPosition,
   startPoint,
-} from "./explodeMeshData"
+} from "../Dataset/explodeMeshData"
 import { useStore } from "../Objects/store"
-import { animated } from "@react-spring/three"
-
-function lerp(start, end, amt) {
-  return (1 - amt) * start + amt * end
-}
-
-export function SingleSky() {
-  const ref = useRef(0)
-  const windowHeight = window.innerHeight
-
-  const { nodes } = useGLTF("assets/singlesky.glb")
-  const map = useTexture("assets/singlesky.jpg")
-  const nodesArr = Object.values(nodes)
-
-  const geoRef = useRef()
-
-  const onScroll = useCallback((e) => {
-    ref.current = MathUtils.clamp(
-      MathUtils.mapLinear(window.scrollY, 0, windowHeight * 3, 1, 0),
-      0,
-      3
-    )
-  }, [])
-
-  window.addEventListener("scroll", onScroll)
-
-  let clone
-
-  useLayoutEffect(() => {
-    clone = geoRef.current.geometry.attributes.position.clone()
-
-    geoRef.current.frustumCulled = false
-
-    onScroll()
-  }, [])
-
-  useFrame(() => {
-    if (geoRef.current) {
-      const arr = geoRef.current.geometry.attributes.position.array
-      if (arr) {
-        for (let i = 0; i < clone.array.length; i += 1) {
-          arr[i] = lerp(
-            clone.array[i],
-            MathUtils.lerp(arr[i], singleSkyPosition[i], 0.07),
-            ref.current
-          )
-        }
-      }
-      geoRef.current.geometry.attributes.position.needsUpdate = true
-    }
-  })
-
-  return (
-    <group>
-      {nodesArr.map((n) => (
-        <mesh
-          onPointerOver={() => (document.body.style.cursor = "pointer")}
-          onPointerOut={() => (document.body.style.cursor = "auto")}
-          ref={geoRef}
-          geometry={n.geometry}
-          onClick={(e) => {
-            e.stopPropagation()
-            console.log("CLICK")
-          }}
-        >
-          <meshBasicMaterial toneMapped={false} side={DoubleSide} map={map} />
-        </mesh>
-      ))}
-    </group>
-  )
-}
 
 function ExplodeMesh() {
   const geoRef = useRef()
@@ -116,26 +36,12 @@ function ExplodeMesh() {
     const startptArr = new Float32Array(startPoint)
     const stAttribute = new BufferAttribute(startptArr, 3)
     bufferGeometry.addAttribute("a_startPoint", stAttribute)
-
-    console.log(bufferGeometry)
   }, [])
 
   return (
     <Billboard lockY={true} lockZ={true} lockX={true}>
       {nodesArr.map((n) => (
-        <mesh
-          // onPointerOver={() => (document.body.style.cursor = "pointer")}
-          // // onPointerOut={() => (document.body.style.cursor = "auto")}
-          ref={geoRef}
-          geometry={n.geometry}
-          onClick={(e) => {
-            // e.preventDefault()
-            // e.stopPropagation()
-            // console.log(e.face.a)
-            // setSkyID(faceIDData[e.face.a])
-            // set(!toggle)
-          }}
-        >
+        <mesh key={n.name} ref={geoRef} geometry={n.geometry}>
           <VertexTransform toggle={toggle} onRest={onRest} map={diffuse} />
         </mesh>
       ))}

@@ -1,21 +1,23 @@
 import * as THREE from "three"
 import { nanoid } from "nanoid"
-import { extend, useFrame } from "@react-three/fiber"
+import { extend } from "@react-three/fiber"
 import { animated, useSpring } from "@react-spring/three"
 import vertex from "./shades/VertexTransform.vert"
 import fragment from "./shades/VertexTransform.frag"
-import { useRef, useEffect, useCallback, useState } from "react"
+import {
+  useRef,
+  useEffect,
+  useLayoutEffect,
+  useCallback,
+  useState,
+} from "react"
 import { MathUtils } from "three"
 import { useStore } from "../../../../Objects/store"
-import { ServerStyleSheet } from "styled-components"
-import { useLayoutEffect } from "react"
-// import { shaderMaterial } from "@react-three/drei"
 
 function shaderMaterial(uniforms, vertexShader, fragmentShader, onInit) {
-  // const material = class material extends THREE.RawShaderMaterial {
   const material = class material extends THREE.ShaderMaterial {
     constructor() {
-      const entries = Object.entries(uniforms) // Create unforms and shaders
+      const entries = Object.entries(uniforms)
 
       super({
         uniforms: entries.reduce((acc, [name, value]) => {
@@ -29,7 +31,6 @@ function shaderMaterial(uniforms, vertexShader, fragmentShader, onInit) {
         vertexShader,
         fragmentShader,
       }) // Create getter/setters
-
       this.key = ""
       entries.forEach(([name]) =>
         Object.defineProperty(this, name, {
@@ -63,22 +64,21 @@ extend({ ShaderMat })
 const AniamtedShaderMat = animated("shaderMat")
 
 function VertexTransform({ map, activeEl, onRest }) {
+  const windowHeight = window.innerHeight
+
   const ref = useRef(2)
+  const shadRef = useRef()
 
   const [isRest, set] = useState()
-
-  const windowHeight = window.innerHeight
-  const [{ scrollPos }, api] = useSpring(() => ({
-    scrollPos: 3,
-    // config: { mass: 20 },
-  }))
+  const skyID = useStore((s) => s.skyID)
 
   useLayoutEffect(() => {
-    // console.log(window.scrollY)
     onScroll()
   }, [])
+  const [{ scrollPos }, api] = useSpring(() => ({
+    scrollPos: 1,
+  }))
 
-  //when scrolling occurs call the setter created by react spring to update the scrollPos value
   const onScroll = useCallback(
     (e) => {
       ref.current = MathUtils.clamp(
@@ -87,12 +87,6 @@ function VertexTransform({ map, activeEl, onRest }) {
         3
       )
 
-      if (ref.current < 0.002) {
-        set(true)
-      } else {
-        set(false)
-      }
-
       api.start({
         scrollPos: ref.current,
       })
@@ -100,11 +94,7 @@ function VertexTransform({ map, activeEl, onRest }) {
     [scrollPos]
   )
 
-  const skyID = useStore((s) => s.skyID)
-
   window.addEventListener("scroll", onScroll)
-
-  const shadRef = useRef()
 
   useEffect(() => {
     shadRef.current.uniforms.uActiveFace.value = skyID
@@ -113,7 +103,6 @@ function VertexTransform({ map, activeEl, onRest }) {
   const { time } = useSpring({
     time: isRest ? 0 : 1,
     delay: isRest ? 500 : 0,
-    // config: { duration: 000 },
   })
 
   return (

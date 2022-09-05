@@ -1,23 +1,6 @@
 
 precision highp float;
 
-// in vec3 position;
-// in vec2 uv;
-// uniform vec2 resolution;
-// uniform mat4 modelViewMatrix;
-// uniform mat4 projectionMatrix;
-// out vec2 vUv;
-
-// ...
-// uniform mat4 modelMatrix;
-// uniform mat4 viewMatrix;
-// uniform mat4 projectionMatrix;
-// uniform mat4 modelViewMatrix;
-// uniform vec3 cameraPosition;
-// attribute vec3 position;
-// attribute vec3 normal;
-// attribute vec2 uv;
-// attribute float displacement;
 // ...
 attribute float faceID;
 attribute vec3 a_centroid;
@@ -61,20 +44,8 @@ void main(){
   
   vec3 p=position.xyz;
   
-  // p.y+=a_centroid.z;
-  // p.x-=a_centroid.x;
-  // p.z+=a_centroid.y;
-  
-  // vec3 newPosition=rotate(p,axis,uMouseX);
-  // vec3 testNew=rotate(p,vec3(0.,0.,0.),0.);
-  // vec3 newPosition=rotate(p,vec3(0.,0.,0.),0.);
-  
   vec3 blend=mix(p.xzy,vec3(a_startPoint.x,a_startPoint.z,a_startPoint.y),uMouseX);
   gl_Position=projectionMatrix*modelViewMatrix*vec4(blend,1.);
-  
-  // gl_Position=projectionMatrix*modelViewMatrix*vec4(vec3(a_startPoint.x,a_startPoint.y,a_startPoint.z),1.);
-  // gl_Position=projectionMatrix*modelViewMatrix*vec4(p.xyz,1.);
-  // gl_Position=projectionMatrix*modelViewMatrix*vec4(vec3(a_startPoint.x,a_startPoint.z,a_startPoint.y),1.);
   
 }
 

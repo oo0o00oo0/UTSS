@@ -1,20 +1,11 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber"
-
-import ExplodeMesh, { SingleSky } from "../Objects/ExplodeMesh"
+import ExplodeMesh from "../Objects/ExplodeMesh"
 import { useSpring, animated } from "@react-spring/three"
-
 import { useCallback, useRef, useEffect } from "react"
-import {
-  MathUtils,
-  BufferGeometry,
-  TubeGeometry,
-  MeshBasicMaterial,
-  Line,
-  Vector3,
-} from "three"
-import { pipeSpline, targetSpline } from "../Objects/explodeMeshData"
+import { MathUtils, BufferGeometry, TubeGeometry, Vector3 } from "three"
+import { pipeSpline, targetSpline } from "../Dataset/explodeMeshData"
 import { useLayoutEffect } from "react"
-import { OrbitControls } from "@react-three/drei"
+import { SingleSky } from "../Objects/SingleSky"
 
 //https://codesandbox.io/s/elastic-dhawan-c8wk9l?file=/src/shaders/00.js
 
@@ -22,25 +13,24 @@ function SceneMain() {
   console.log(window.devicePixelRatio)
   return (
     <Canvas
-      orthographic={false}
-      dpr={window.devicePixelRatio}
       camera={{
         fov: 60,
         near: 0.1,
         far: 200,
-        position: [-5.4869334241893455, 94.41779388991088, 47.47049513898217],
+        position: [-5, 94, 47],
       }}
     >
       <group position={[0, 9, 0]}>
         <ExplodeMesh />
         <SingleSky />
       </group>
-      <CustCam />
+      <CameraPaths />
+      <ScrollCam />
     </Canvas>
   )
 }
 
-function CustCam() {
+function ScrollCam() {
   const cameraRef = useRef()
   const tRef = useRef(0)
   const targetRef = useRef()
@@ -125,7 +115,6 @@ function CustCam() {
 
   return (
     <>
-      {/* <OrbitControls enablePan={true} /> */}
       <animated.perspectiveCamera position={scrollPos} ref={cameraRef} />
     </>
   )
