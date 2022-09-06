@@ -6,30 +6,57 @@ import { MathUtils, BufferGeometry, TubeGeometry, Vector3 } from "three"
 import { pipeSpline, targetSpline } from "../Dataset/explodeMeshData"
 import { useLayoutEffect } from "react"
 import { SingleSky } from "../Objects/SingleSky"
+import { useScroll } from "@react-three/drei"
 
 //https://codesandbox.io/s/elastic-dhawan-c8wk9l?file=/src/shaders/00.js
 
 function SceneMain() {
   console.log(window.devicePixelRatio)
   return (
-    <Canvas
-      camera={{
-        fov: 60,
-        near: 0.1,
-        far: 200,
-        position: [-5, 94, 47],
-      }}
-    >
-      <group position={[0, 9, 0]}>
-        <ExplodeMesh />
-        <SingleSky />
-      </group>
-      <CameraPaths />
-      <ScrollCam />
-    </Canvas>
+    <>
+      <div
+        style={{
+          position: "absolute",
+          zIndex: "1",
+          filter: "blur(4px)",
+          border: "red solid 2px",
+          height: "100vh",
+          width: "100vw",
+        }}
+      ></div>
+      <div
+        style={{
+          right: "40%",
+          top: "40%",
+          position: "absolute",
+          background: "#F7DEA6",
+          borderRadius: "100%",
+          filter: "blur(30px)",
+          height: "50vw",
+          width: "50vw",
+        }}
+      >
+        testest
+      </div>
+
+      <Canvas
+        camera={{
+          fov: 60,
+          near: 0.1,
+          far: 200,
+          position: [-5, 94, 47],
+        }}
+      >
+        <group position={[0, 9, 0]}>
+          <ExplodeMesh />
+          <SingleSky />
+        </group>
+        <CameraPaths />
+        <ScrollCam />
+      </Canvas>
+    </>
   )
 }
-
 function ScrollCam() {
   const cameraRef = useRef()
   const tRef = useRef(0)
